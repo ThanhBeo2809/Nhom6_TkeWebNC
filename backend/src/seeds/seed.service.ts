@@ -104,10 +104,7 @@ export class SeedService implements OnModuleInit {
     created: Record<string, number>,
   ) {
     const repository = manager.getRepository(User);
-    const password = await bcrypt.hash(
-      process.env.DEMO_STAFF_PASSWORD || 'NhanVien@123',
-      10,
-    );
+    const password = await bcrypt.hash('12345678', 10);
     const staff: User[] = [];
 
     for (const data of DEMO_STAFF) {

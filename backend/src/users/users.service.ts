@@ -6,9 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { randomBytes } from 'crypto';
 import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+
+const DEFAULT_STAFF_PASSWORD = '12345678';
 
 @Injectable()
 export class UsersService {
@@ -33,7 +34,7 @@ export class UsersService {
       where: { email: dto.email },
     });
     if (existing) throw new ConflictException('Email đã tồn tại');
-    const temporaryPassword = randomBytes(9).toString('base64url');
+    const temporaryPassword = DEFAULT_STAFF_PASSWORD;
     const defaultPassword = await bcrypt.hash(temporaryPassword, 10);
     const user = this.userRepo.create({
       name: dto.name,

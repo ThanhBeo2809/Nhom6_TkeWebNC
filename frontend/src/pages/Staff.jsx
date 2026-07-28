@@ -29,8 +29,8 @@ export default function Staff() {
       load();
       alert(
         `Đã tạo tài khoản ${response.data.email}.\n` +
-        `Mật khẩu tạm thời: ${response.data.temporaryPassword}\n\n` +
-        'Hãy lưu lại và gửi riêng cho nhân viên. Mật khẩu chỉ hiển thị lần này.',
+        `Mật khẩu đăng nhập lần đầu: ${response.data.temporaryPassword}\n\n` +
+        'Nhân viên phải đổi mật khẩu ngay sau khi đăng nhập.',
       );
     } catch (err) {
       setError(err.response?.data?.message || 'Tạo thất bại');
@@ -114,7 +114,7 @@ export default function Staff() {
               <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="staff-notice">
-              Hệ thống sẽ tạo mật khẩu tạm thời ngẫu nhiên. Nhân viên phải đổi mật khẩu khi đăng nhập lần đầu.
+              Mật khẩu đăng nhập lần đầu là <strong>12345678</strong>. Nhân viên phải đổi mật khẩu ngay sau khi đăng nhập.
             </div>
             <form onSubmit={handleCreate}>
               <div className="form-group">

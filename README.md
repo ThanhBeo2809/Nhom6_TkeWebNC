@@ -101,6 +101,9 @@ Hệ thống được chia làm 2 phân quyền chính là **Admin (Chủ cửa 
 Lần đầu backend chạy với bảng `users` rỗng, hệ thống tự tạo tài khoản Admin:
 `admin@cuahang.com / admin123`. Không có route đăng ký công khai.
 
+Tài khoản Staff do Admin tạo sử dụng mật khẩu đăng nhập lần đầu là
+`12345678` và bắt buộc đổi mật khẩu trước khi sử dụng hệ thống.
+
 ### 4.2. Luồng thao tác dành cho Nhân viên (Staff)
 1. **Đăng nhập:** Truy cập `/login` và đăng nhập bằng tài khoản nhân viên.
 2. **Bán hàng:** 

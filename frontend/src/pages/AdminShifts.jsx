@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { forceCloseShift, getAdminShifts, getShiftOrders } from '../api/shifts';
 import { getUsers } from '../api/users';
+import { getOrderStatusPresentation } from '../utils/orderStatus';
 import '../components/common/Modal.css';
 import './MyShift.css';
 
@@ -23,7 +24,7 @@ export default function AdminShifts() {
     </table></div></div>
     {detail&&<div className="modal-overlay" onClick={()=>setDetail(null)}><div className="modal-box order-detail-box" onClick={e=>e.stopPropagation()}><div className="modal-header"><h3>Ca #{detail.id} — {detail.staff?.name}</h3><button className="modal-close" onClick={()=>setDetail(null)}>✕</button></div>
       <div className="shift-details"><p>Tiền đầu ca <strong>{fmt(detail.openingCash)} đ</strong></p><p>Tiền mặt <strong>{fmt(detail.cashSales)} đ</strong></p><p>Chuyển khoản <strong>{fmt(detail.transferSales)} đ</strong></p><p>Số hóa đơn <strong>{detail.totalOrders}</strong></p>{detail.closeNote&&<p>Lý do đóng <strong>{detail.closeNote}</strong></p>}</div>
-      <h4>Hóa đơn trong ca</h4><div className="table-wrapper"><table><tbody>{detail.orders.map(o=><tr key={o.id}><td>#{o.id}</td><td>{new Date(o.createdAt).toLocaleString('vi-VN')}</td><td>{fmt(o.totalAmount)} đ</td><td>{o.status==='completed'?'Hoàn thành':'Đã hủy'}</td></tr>)}</tbody></table></div>
+      <h4>Hóa đơn trong ca</h4><div className="table-wrapper"><table><tbody>{detail.orders.map(o=><tr key={o.id}><td>#{o.id}</td><td>{new Date(o.createdAt).toLocaleString('vi-VN')}</td><td>{fmt(o.totalAmount)} đ</td><td><span className={`badge ${getOrderStatusPresentation(o).className}`}>{getOrderStatusPresentation(o).label}</span></td></tr>)}</tbody></table></div>
       {detail.status==='open'&&<div className="modal-actions"><button className="btn-danger" onClick={()=>forceClose(detail)}>Buộc đóng ca</button></div>}
     </div></div>}
   </div>;

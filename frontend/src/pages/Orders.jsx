@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getOrders, getOrderById, cancelOrder, requestCancelOrder, approveCancelOrder, rejectCancelOrder } from '../api/orders';
 import { useAuth } from '../context/AuthContext';
+import { getOrderStatusPresentation } from '../utils/orderStatus';
 import '../components/common/Modal.css';
 import './Orders.css';
 
@@ -189,8 +190,8 @@ export default function Orders() {
                   <td style={{ fontWeight: 600 }}>{fmt(o.totalAmount)} đ</td>
                   <td>{o.paymentMethod === 'transfer' ? 'Chuyển khoản' : 'Tiền mặt'}</td>
                   <td>
-                    <span className={`badge ${o.status === 'completed' ? 'badge-green' : 'badge-red'}`}>
-                      {o.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}
+                    <span className={`badge ${getOrderStatusPresentation(o).className}`}>
+                      {getOrderStatusPresentation(o).label}
                     </span>
                   </td>
                   <td>
@@ -219,8 +220,8 @@ export default function Orders() {
               <span>🕐 {fmtDate(detail.createdAt)}</span>
               {user?.role === 'admin' && <span>👤 {detail.user?.name}</span>}
               <span>💳 {detail.paymentMethod === 'transfer' ? 'Chuyển khoản' : 'Tiền mặt'}</span>
-              <span className={`badge ${detail.status === 'completed' ? 'badge-green' : 'badge-red'}`}>
-                {detail.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}
+              <span className={`badge ${getOrderStatusPresentation(detail).className}`}>
+                {getOrderStatusPresentation(detail).label}
               </span>
             </div>
 

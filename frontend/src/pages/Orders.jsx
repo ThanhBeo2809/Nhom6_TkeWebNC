@@ -143,6 +143,7 @@ export default function Orders() {
           <select value={filters.status} onChange={(event) => setFilters({ ...filters, status: event.target.value })}>
             <option value="">Tất cả trạng thái</option>
             <option value="completed">Hoàn thành</option>
+            <option value="pending">Chờ duyệt hủy</option>
             <option value="cancelled">Đã hủy</option>
           </select>
           <select value={filters.paymentMethod} onChange={(event) => setFilters({ ...filters, paymentMethod: event.target.value })}>

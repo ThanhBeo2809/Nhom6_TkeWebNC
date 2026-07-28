@@ -1,6 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsDateString, IsEnum, IsInt, IsOptional, Min } from 'class-validator';
-import { OrderStatus, PaymentMethod } from '../entities/order.entity';
+import { PaymentMethod } from '../entities/order.entity';
+
+export enum OrderFilterStatus {
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+  PENDING = 'pending',
+}
 
 export class OrderQueryDto {
   @IsOptional()
@@ -10,8 +16,8 @@ export class OrderQueryDto {
   orderId?: number;
 
   @IsOptional()
-  @IsEnum(OrderStatus)
-  status?: OrderStatus;
+  @IsEnum(OrderFilterStatus)
+  status?: OrderFilterStatus;
 
   @IsOptional()
   @IsEnum(PaymentMethod)

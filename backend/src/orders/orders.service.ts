@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { OrderQueryDto } from './dto/order-query.dto';
+import { OrderFilterStatus, OrderQueryDto } from './dto/order-query.dto';
 import { OrderItem } from './entities/order-item.entity';
 import {
   CancelRequestStatus,
@@ -173,8 +173,21 @@ export class OrdersService {
     }
     if (query.orderId)
       qb.andWhere('order.id = :orderId', { orderId: query.orderId });
-    if (query.status)
+    if (query.status === OrderFilterStatus.PENDING) {
+      qb.andWhere('order.status = :status', {
+        status: OrderStatus.COMPLETED,
+      });
+      qb.andWhere('order.cancelRequestStatus = :cancelRequestStatus', {
+        cancelRequestStatus: CancelRequestStatus.PENDING,
+      });
+    } else if (query.status) {
       qb.andWhere('order.status = :status', { status: query.status });
+      if (query.status === OrderFilterStatus.COMPLETED) {
+        qb.andWhere('order.cancelRequestStatus != :pendingStatus', {
+          pendingStatus: CancelRequestStatus.PENDING,
+        });
+      }
+    }
     if (query.paymentMethod) {
       qb.andWhere('order.paymentMethod = :paymentMethod', {
         paymentMethod: query.paymentMethod,

@@ -129,6 +129,53 @@ describe('OrdersService business rules', () => {
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
+  it('yêu cầu hủy của staff chỉ chuyển sang chờ duyệt, chưa hủy hóa đơn', async () => {
+    const order: any = {
+      id: 5,
+      createdBy: 7,
+      status: OrderStatus.COMPLETED,
+      cancelRequestStatus: CancelRequestStatus.NONE,
+      cancelledAt: null,
+    };
+    const orderQuery = {
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      setLock: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockResolvedValue(order),
+    };
+    const manager = {
+      getRepository: jest.fn().mockReturnValue({
+        createQueryBuilder: jest.fn().mockReturnValue(orderQuery),
+      }),
+      save: jest.fn(async (value) => value),
+    };
+    const dataSource = {
+      transaction: jest.fn((callback) => callback(manager)),
+    };
+    const inventoryService = {
+      recordMovement: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = new OrdersService(
+      {} as any,
+      {} as any,
+      dataSource as any,
+      inventoryService as any,
+    );
+
+    await service.requestCancel(
+      order.id,
+      order.createdBy,
+      UserRole.STAFF,
+      'Khách nhập nhầm sản phẩm',
+    );
+
+    expect(order.status).toBe(OrderStatus.COMPLETED);
+    expect(order.cancelRequestStatus).toBe(CancelRequestStatus.PENDING);
+    expect(order.cancelReason).toBe('Khách nhập nhầm sản phẩm');
+    expect(order.cancelledAt).toBeNull();
+    expect(inventoryService.recordMovement).not.toHaveBeenCalled();
+  });
+
   it('duyệt hủy cập nhật kho, thông tin kiểm toán và số liệu ca đã đóng', async () => {
     const order: any = {
       id: 15,

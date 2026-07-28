@@ -1,0 +1,32 @@
+.staff-notice {
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.toggle-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+}
+
+.btn-lock {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-lock:hover { background: #fecaca; }
+
+.btn-unlock {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.btn-unlock:hover { background: #bbf7d0; }

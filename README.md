@@ -1,7 +1,5 @@
 # 🛒 Hệ thống Quản lý Bán hàng (POS)
 
-> Tài liệu phân tích, sơ đồ và kịch bản kiểm thử: [docs/BAO_CAO_HE_THONG.md](docs/BAO_CAO_HE_THONG.md)
-
 Dự án Hệ thống Quản lý Bán hàng (Point of Sale - POS) hoàn chỉnh được xây dựng với kiến trúc Client-Server, tách biệt rõ ràng giữa Backend và Frontend.
 
 ## 🚀 1. Công nghệ sử dụng (Tech Stack)

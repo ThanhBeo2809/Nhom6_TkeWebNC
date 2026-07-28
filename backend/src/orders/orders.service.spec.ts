@@ -13,6 +13,7 @@ import {
 import { UserRole } from '../users/entities/user.entity';
 import { Product } from '../products/entities/product.entity';
 import { Shift, ShiftStatus } from '../shifts/entities/shift.entity';
+import { OrderFilterStatus } from './dto/order-query.dto';
 
 describe('OrdersService business rules', () => {
   const product = {
@@ -120,6 +121,47 @@ describe('OrdersService business rules', () => {
     const { service, orderRepo } = buildService();
     await service.findOne(5, 1, UserRole.ADMIN);
     expect(orderRepo.findOne).toHaveBeenCalledWith({ where: { id: 5 } });
+  });
+
+  it('lọc riêng hóa đơn chờ duyệt hủy khỏi hóa đơn hoàn thành', async () => {
+    const queryBuilder = {
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([]),
+    };
+    const orderRepo = {
+      createQueryBuilder: jest.fn().mockReturnValue(queryBuilder),
+    };
+    const service = new OrdersService(
+      orderRepo as any,
+      {} as any,
+      {} as any,
+      {} as any,
+    );
+
+    await service.findAll(1, UserRole.ADMIN, {
+      status: OrderFilterStatus.PENDING,
+    });
+
+    expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+      'order.status = :status',
+      { status: OrderStatus.COMPLETED },
+    );
+    expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+      'order.cancelRequestStatus = :cancelRequestStatus',
+      { cancelRequestStatus: CancelRequestStatus.PENDING },
+    );
+
+    queryBuilder.andWhere.mockClear();
+    await service.findAll(1, UserRole.ADMIN, {
+      status: OrderFilterStatus.COMPLETED,
+    });
+
+    expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+      'order.cancelRequestStatus != :pendingStatus',
+      { pendingStatus: CancelRequestStatus.PENDING },
+    );
   });
 
   it('không cho nhân viên hủy trực tiếp hóa đơn', async () => {

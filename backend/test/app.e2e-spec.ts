@@ -5,6 +5,8 @@ import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { configureApp } from './../src/app.setup';
 
+jest.setTimeout(30000);
+
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 

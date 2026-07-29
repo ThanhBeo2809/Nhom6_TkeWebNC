@@ -273,6 +273,95 @@ npm run lint
 npm run build
 ```
 
+## Pháp luật, đạo đức và an toàn thông tin
+
+### Phạm vi dữ liệu
+
+Hệ thống xử lý họ tên, email, trạng thái tài khoản, ca làm việc và hoạt động bán
+hàng của nhân viên. Phiên bản hiện tại không lưu thông tin định danh của khách
+hàng. Khi triển khai thực tế, đơn vị vận hành phải:
+
+- Chỉ thu thập dữ liệu cần thiết cho hoạt động quản lý cửa hàng.
+- Thông báo rõ mục đích, phạm vi và thời hạn xử lý dữ liệu.
+- Giới hạn quyền truy cập theo nhiệm vụ của Admin và Staff.
+- Có quy trình cập nhật, xóa, sao lưu và xử lý sự cố dữ liệu.
+- Không chia sẻ hoặc sử dụng dữ liệu nhân viên cho mục đích ngoài phạm vi đã
+  thông báo.
+
+Các văn bản được tham khảo:
+
+- [Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15](https://vanban.chinhphu.vn/?classid=1&docid=214590&pageid=27160&typegroupid=3),
+  có hiệu lực từ ngày 01/01/2026.
+- [Nghị định 356/2025/NĐ-CP](https://vanban.chinhphu.vn/?classid=1&docid=216387&pageid=27160)
+  quy định chi tiết một số nội dung về bảo vệ dữ liệu cá nhân.
+- [Luật An ninh mạng số 116/2025/QH15](https://vanban.chinhphu.vn/?classid=1&docid=216499&orggroupid=1&pageid=27160),
+  có hiệu lực từ ngày 01/07/2026.
+- [Luật Bảo vệ quyền lợi người tiêu dùng số 19/2023/QH15](https://vanban.chinhphu.vn/?classid=1&docid=208363&orggroupid=1&pageid=27160&previousPage=other+articles).
+- [Luật Giao dịch điện tử số 20/2023/QH15](https://vanban.chinhphu.vn/?docid=208421&pageid=27160).
+
+### Nguyên tắc đạo đức
+
+- Không sửa doanh thu, tồn kho hoặc hóa đơn nhằm gian lận.
+- Không ghi nhận hóa đơn là **Đã hủy** trước khi Admin duyệt.
+- Không sử dụng dữ liệu ca làm để giám sát nhân viên ngoài mục đích quản lý đã
+  thông báo.
+- Dữ liệu seed phải được nhận diện là dữ liệu mẫu, không trình bày như giao dịch
+  thật.
+- Thành viên commit bằng đúng danh tính của người thực hiện hoặc chịu trách
+  nhiệm về thay đổi.
+- Hình ảnh, biểu tượng, thư viện và source code của bên thứ ba phải được sử dụng
+  theo đúng giấy phép và ghi nguồn khi cần.
+- Lỗi bảo mật phải được báo cáo trung thực, sửa có kiểm thử và không được khai
+  thác trái phép.
+
+### Biện pháp an toàn đã triển khai
+
+| Biện pháp | Trạng thái |
+| --- | --- |
+| Mã hóa mật khẩu bằng Bcrypt | Đã có |
+| Không trả mật khẩu trong truy vấn thông thường | Đã có |
+| Xác thực JWT và kiểm tra tài khoản bị khóa | Đã có |
+| Phân quyền Admin/Staff bằng Guard | Đã có |
+| Kiểm tra dữ liệu bằng DTO và ValidationPipe | Đã có |
+| Giới hạn CORS bằng danh sách origin | Đã có |
+| Không commit `.env` và bí mật thật | Đã có |
+| Transaction và pessimistic lock cho dữ liệu quan trọng | Đã có |
+| Nhật ký nhập, bán, hoàn kho và xử lý hủy | Đã có |
+| Unit test và e2e test | Đã có |
+
+### Giới hạn và việc cần làm trước production
+
+Project có nền tảng an toàn phù hợp với môi trường học tập nhưng **chưa được xem
+là sẵn sàng cho production**. Trước khi triển khai thực tế cần:
+
+- Cập nhật các dependency có cảnh báo bảo mật và chạy lại toàn bộ test.
+- Bổ sung rate limiting cho API đăng nhập và các endpoint nhạy cảm.
+- Bổ sung Helmet, Content Security Policy và các security header.
+- Chỉ vận hành qua HTTPS.
+- Cân nhắc chuyển JWT khỏi `localStorage` sang cookie `HttpOnly`, `Secure`,
+  `SameSite` cùng cơ chế phòng chống CSRF phù hợp.
+- Thay mật khẩu mặc định bằng mật khẩu tạm ngẫu nhiên, dùng một lần.
+- Thiết lập audit log cho đăng nhập và thao tác quản trị.
+- Xây dựng chính sách lưu trữ, sao lưu, khôi phục và phản ứng sự cố.
+- Sử dụng tài khoản MySQL có quyền tối thiểu, không dùng `root`.
+- Đặt `DB_SYNCHRONIZE=false` và quản lý schema bằng migration.
+- Bổ sung file `LICENSE` và kiểm tra quyền sử dụng các tài nguyên hình ảnh.
+
+Kiểm tra dependency production:
+
+```bash
+cd backend
+npm audit --omit=dev
+
+cd ../frontend
+npm audit --omit=dev
+```
+
+Tại lần kiểm tra ngày 29/07/2026, `npm audit` vẫn báo dependency có lỗ hổng ở cả
+backend và frontend. Nhóm cần cập nhật dependency, review thay đổi và chạy lại
+unit test, e2e, lint, build trước khi triển khai. Không nên chạy
+`npm audit fix --force` khi chưa đánh giá breaking change.
+
 ## Lưu ý khi triển khai
 
 - Đặt `DB_SYNCHRONIZE=false` trong môi trường production và quản lý thay đổi
